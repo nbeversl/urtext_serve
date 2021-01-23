@@ -42,13 +42,13 @@ def show_projects():
 def set_project():
     d = request.form.to_dict()
     project_list.set_current_project(d['title'])
-    # while not project_list.current_project.compiled:
-    #     time.sleep(1)
+    while not project_list.current_project.compiled:
+        time.sleep(1)
     filename, node_position = project_list.current_project.get_file_and_position(
         project_list.nav_current())
     if not filename:
-        print('NO PROJECT')
-        return EMPTY
+        print('File node found for node')
+        
     return json.dumps({
         'title' : project_list.current_project.title,
         'path' : project_list.current_project.path,
@@ -80,9 +80,7 @@ def get_home():
 @app.route('/get-link-set-project', methods=['GET', 'POST'])
 def get_link_and_set_project():
     d = request.form.to_dict()
-    print(d)
     link = project_list.get_link_and_set_project(d['line'], position=int(d['column']))
-    print(link)
     if link == None:
         if not project_list.current_project.compiled:
            print("Project is still compiling")
@@ -200,7 +198,7 @@ def nodes():
     else:
         requested_nodes = d['nodes']
         requested_nodes = sorted(requested_nodes, 
-            key=lambda nid: project_list.current_project.nodes[nid].date, 
+            key=lambda nid: project_list.current_project.nodes[nid].date(), 
             reverse=True)
         
     r = { 'current_project' : project_list.current_project.title,
@@ -213,8 +211,7 @@ def nodes():
             this_node['title'] = '(no title)'
         else:
             this_node['title'] = project_list.current_project.nodes[n].title
-        this_node['date'] = str(
-            project_list.current_project.nodes[n].date.strftime(project_list.current_project.settings['timestamp_format']))
+        this_node['date'] = str(project_list.current_project.nodes[n].date())
         this_node['position'] = project_list.current_project.nodes[n].ranges[0][0]
         this_node['id'] = project_list.current_project.nodes[n].id
         this_node['project_title'] = project_list.current_project.title        
@@ -483,7 +480,7 @@ def keywords():
             r['nodes'][n]['title'] = '(no title)'
         else:
             r['nodes'][n]['title'] = project_list.current_project.nodes[n].title
-        r['nodes'][n]['date'] = str(project_list.current_project.nodes[n].date)
+        r['nodes'][n]['date'] = str(project_list.current_project.nodes[n].date())
         r['nodes'][n]['position'] = project_list.current_project.nodes[n].ranges[0][0]
         r['nodes'][n]['id'] = project_list.current_project.nodes[n].id
         r['nodes'][n]['project_title'] = project_list.current_project.title        
@@ -511,7 +508,7 @@ def associate():
             'filename' :os.path.join(project_list.current_project.path, project_list.current_project.nodes[nid].filename),            
             'position' :project_list.current_project.nodes[nid].ranges[0][0],
             'project_title' :project_list.current_project.title,
-            'date' : str(project_list.current_project.nodes[nid].date),
+            'date' : str(project_list.current_project.nodes[nid].date()),
             'title' : title
         }
         nodes.append(next_node)
