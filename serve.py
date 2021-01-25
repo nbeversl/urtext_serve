@@ -47,8 +47,8 @@ def set_project():
     filename, node_position = project_list.current_project.get_file_and_position(
         project_list.nav_current())
     if not filename:
-        print('File node found for node')
-        
+        print('File not found for node')
+        return EMPTY        
     return json.dumps({
         'title' : project_list.current_project.title,
         'path' : project_list.current_project.path,
@@ -532,6 +532,13 @@ def get_history():
         'history' : json.dumps(history),
         'timestamp-format': project_list.current_project.settings['timestamp_format']
         })
+
+@app.route('/async-off', methods=['GET', 'POST'])
+def async_off():
+    for project in project_list.projects:
+        print(project)
+        project.is_async = False
+    return EMPTY
 
 
 # NOT WORKING
