@@ -15,13 +15,12 @@ if not os.path.exists(path):
     print('Path does not exist')
     sys.exit()
 
+app = Flask(__name__)
+
 project_list = ProjectList(path) 
 if len(project_list.projects) == 0:
     print('No Urtext projects found here')
     sys.exit()
-
-app = Flask(__name__)
-
 
 @app.route('/')
 def hello_world():
@@ -539,6 +538,24 @@ def async_off():
         print(project)
         project.is_async = False
     return EMPTY
+
+@app.route('/log-node-meta', methods=['GET', 'POST'])
+def log_node_meta():
+    d = request.form.to_dict()
+    print(d)
+    node_id = project_list.current_project.get_node_id_from_position(d['filename'], int(d['position']))
+    if not node_id:
+        print('No Node found here')
+        return EMPTY
+    print(project_list.current_project.nodes[node_id].id)
+    print(project_list.current_project.nodes[node_id].ranges)
+    print(project_list.current_project.nodes[node_id].root_node)
+    print(project_list.current_project.nodes[node_id].compact)
+    print(project_list.current_project.nodes[node_id].export_points)
+    project_list.current_project.nodes[node_id].metadata.log()
+    return EMPTY
+
+
 
 
 # NOT WORKING
