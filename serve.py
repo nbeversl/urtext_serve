@@ -233,7 +233,6 @@ def filename():
 def new_node():
     new_node = project_list.current_project.new_file_node()
     project_list.nav_new(new_node['id'])        
-
     return json.dumps({
         'title' : project_list.current_project.title,
         'path' : project_list.current_project.path,
@@ -322,12 +321,10 @@ def snapshot():
 def new_inline_node():
     d = request.form.to_dict()
     
-    new_node = project_list.current_project.add_inline_node(
-        contents=d['contents'],
-        include_timestamp= True if d['include_timestamp'] == 'True' else False)
+    new_node = project_list.current_project.new_inline_node(contents=d['contents'])
     return json.dumps({
-            'contents' : new_node[0],
-            'id':new_node[1]
+            'contents' : new_node['contents'],
+            'id':new_node['id']
             })
 
 
@@ -570,4 +567,4 @@ def search():
             'results' : search_results.result
             })
     
-app.run(host="127.0.0.1", port=5000, debug=True)
+app.run(host="127.0.0.1", use_reloader=False, port=5000, debug=True)
