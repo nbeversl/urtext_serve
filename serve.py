@@ -221,7 +221,6 @@ def nodes():
 @app.route('/filename-from-link', methods=['GET', 'POST'])
 def filename():
     d = request.form.to_dict()
-    
     return json.dumps({
         'title' : project_list.current_project.title,
         'path' : project_list.current_project.path,
@@ -231,6 +230,8 @@ def filename():
 
 @app.route('/new-node', methods=['GET', 'POST'])
 def new_node():
+    d = request.form.to_dict()
+    project_list.set_current_project(d['project'])
     new_node = project_list.current_project.new_file_node()
     project_list.nav_new(new_node['id'])        
     return json.dumps({
@@ -320,7 +321,7 @@ def snapshot():
 @app.route('/add-inline-node', methods=['GET', 'POST'])
 def new_inline_node():
     d = request.form.to_dict()
-    
+    project_list.set_current_project(d['project'])
     new_node = project_list.current_project.new_inline_node(contents=d['contents'])
     return json.dumps({
             'contents' : new_node['contents'],
