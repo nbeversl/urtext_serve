@@ -61,11 +61,12 @@ def set_project():
 def get_home():
     d = request.form.to_dict()
     if project_list.set_current_project(d['project']):
-    
         node_id = project_list.current_project.get_home()
         project_list.nav_new(node_id)
         filename, node_position = project_list.current_project.get_file_and_position(
             project_list.nav_current())
+        if not filename:
+            return EMPTY
         return json.dumps({
             'title' : project_list.current_project.title,
             'path' : project_list.current_project.path,
